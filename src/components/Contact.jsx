@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Contact.css";
 
 function Contact({ onBack }) {
-  const [enquiries, setEnquiries] = useState("");
+ 
   const [domainStatus, setDomainStatus] = useState("");
 
   const handleSubmit = (e) => {
