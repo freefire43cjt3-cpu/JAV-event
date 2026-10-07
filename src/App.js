@@ -120,38 +120,248 @@ function App() {
     }
   };
 
+  // ==========================================
+  // SUBMIT FORM
+  // ==========================================
+
   const submitForm = async () => {
     setSubmitting(true);
+
+    const message = `
+JAV EVENTS & SERVICES
+WEBSITE PROJECT QUESTIONNAIRE
+
+========================================
+01. BUSINESS INFORMATION
+========================================
+
+Business Name:
+${formData.business.businessName || "Not provided"}
+
+Business Experience:
+${formData.business.businessExperience || "Not provided"}
+
+Business Description:
+${formData.business.businessDescription || "Not provided"}
+
+Business Location:
+${formData.business.businessLocation || "Not provided"}
+
+Service Areas:
+${formData.business.serviceAreas || "Not provided"}
+
+Business Phone:
+${formData.business.businessPhone || "Not provided"}
+
+WhatsApp:
+${formData.business.businessWhatsApp || "Not provided"}
+
+Business Email:
+${formData.business.businessEmail || "Not provided"}
+
+Existing Website:
+${formData.business.existingWebsite || "Not provided"}
+
+Business Address:
+${formData.business.businessAddress || "Not provided"}
+
+Business Hours:
+${formData.business.businessHours || "Not provided"}
+
+
+========================================
+02. SERVICES
+========================================
+
+Selected Services:
+${
+  formData.services.selectedServices.length
+    ? formData.services.selectedServices
+        .map((item) => `• ${item}`)
+        .join("\n")
+    : "Not provided"
+}
+
+Priority Service:
+${formData.services.priorityService || "Not provided"}
+
+Service Description:
+${formData.services.serviceDescription || "Not provided"}
+
+
+========================================
+03. WEBSITE GOALS
+========================================
+
+Goals:
+${
+  formData.goals.selectedGoals.length
+    ? formData.goals.selectedGoals
+        .map((item) => `• ${item}`)
+        .join("\n")
+    : "Not provided"
+}
+
+Main Visitor Action:
+${formData.goals.visitorAction || "Not provided"}
+
+Website Vision:
+${formData.goals.websiteVision || "Not provided"}
+
+
+========================================
+04. BRANDING & VISUAL STYLE
+========================================
+
+Has Logo:
+${formData.branding.hasLogo || "Not provided"}
+
+Preferred Style:
+${formData.branding.style || "Not provided"}
+
+Preferred Colours:
+${formData.branding.colors || "Not provided"}
+
+Colours to Avoid:
+${formData.branding.avoidColors || "Not provided"}
+
+Reference Websites:
+${formData.branding.referenceWebsites || "Not provided"}
+
+
+========================================
+05. CONTENT & MEDIA
+========================================
+
+Professional Photos:
+${formData.content.hasPhotos || "Not provided"}
+
+Videos:
+${formData.content.hasVideos || "Not provided"}
+
+Written Website Content:
+${formData.content.hasWrittenContent || "Not provided"}
+
+Content Notes:
+${formData.content.contentNotes || "Not provided"}
+
+
+========================================
+06. WEBSITE FEATURES
+========================================
+
+Selected Features:
+${
+  formData.features.selectedFeatures.length
+    ? formData.features.selectedFeatures
+        .map((item) => `• ${item}`)
+        .join("\n")
+    : "Not provided"
+}
+
+Custom Feature:
+${formData.features.customFeature || "Not provided"}
+
+Online Booking:
+${formData.features.bookingRequired || "Not provided"}
+
+
+========================================
+07. CONTACT & PROJECT DETAILS
+========================================
+
+Contact Person:
+${formData.contact.contactName || "Not provided"}
+
+Phone:
+${formData.contact.contactPhone || "Not provided"}
+
+WhatsApp:
+${formData.contact.contactWhatsApp || "Not provided"}
+
+Email:
+${formData.contact.contactEmail || "Not provided"}
+
+Domain Status:
+${formData.contact.domainStatus || "Not provided"}
+
+Domain Name:
+${formData.contact.domainName || "Not provided"}
+
+Instagram:
+${formData.contact.instagram || "Not provided"}
+
+Facebook:
+${formData.contact.facebook || "Not provided"}
+
+TikTok:
+${formData.contact.tiktok || "Not provided"}
+
+YouTube:
+${formData.contact.youtube || "Not provided"}
+
+Additional Information:
+${formData.contact.additionalInformation || "Not provided"}
+
+
+========================================
+END OF QUESTIONNAIRE
+========================================
+`;
 
     try {
       const response = await fetch(
         "https://formspree.io/f/mbgjjdqg",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
+
           body: JSON.stringify({
-            subject: "JAV Events & Services - Website Questionnaire",
-            businessName: formData.business.businessName,
-            questionnaire: JSON.stringify(formData, null, 2),
+            _subject: `JAV Website Questionnaire - ${
+              formData.business.businessName || "New Submission"
+            }`,
+
+            name: formData.contact.contactName,
+
+            email: formData.contact.contactEmail,
+
+            _replyto: formData.contact.contactEmail,
+
+            message: message,
           }),
         }
       );
 
       if (response.ok) {
         setSubmitted(true);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
       } else {
-        alert("Something went wrong. Please try again.");
+        alert(
+          "Something went wrong while submitting the questionnaire. Please try again."
+        );
       }
     } catch (error) {
-      alert("Unable to submit the questionnaire.");
+      console.error(error);
+
+      alert(
+        "Unable to submit the questionnaire. Please check your internet connection and try again."
+      );
     } finally {
       setSubmitting(false);
     }
   };
+
+  // ==========================================
+  // STEP VALIDATION
+  // ==========================================
 
   const handleBusinessSubmit = (e) => {
     e.preventDefault();
@@ -188,7 +398,9 @@ function App() {
       formData.goals.selectedGoals.length === 0 ||
       !formData.goals.visitorAction
     ) {
-      alert("Please select your website goals and preferred visitor action.");
+      alert(
+        "Please select your website goals and preferred visitor action."
+      );
       return;
     }
 
@@ -198,13 +410,22 @@ function App() {
   const handleBrandingSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.branding.hasLogo || !formData.branding.style) {
-      alert("Please complete the required branding questions.");
+    if (
+      !formData.branding.hasLogo ||
+      !formData.branding.style
+    ) {
+      alert(
+        "Please complete the required branding questions."
+      );
       return;
     }
 
     nextStep();
   };
+
+  // ==========================================
+  // SUCCESS PAGE
+  // ==========================================
 
   if (submitted) {
     return (
@@ -212,6 +433,7 @@ function App() {
         <header className="top-header">
           <div className="brand">
             <div className="brand-mark">JAV</div>
+
             <div>
               <h3>JAV Events & Services</h3>
               <span>PLAN • CREATE • CELEBRATE</span>
@@ -223,7 +445,9 @@ function App() {
           <div className="success-card">
             <div className="success-icon">✓</div>
 
-            <div className="eyebrow">QUESTIONNAIRE SUBMITTED</div>
+            <div className="eyebrow">
+              QUESTIONNAIRE SUBMITTED
+            </div>
 
             <h1>
               Thank you for
@@ -231,21 +455,28 @@ function App() {
             </h1>
 
             <p>
-              Your website project questionnaire has been successfully
-              submitted. We'll review your requirements and use your
-              answers to plan the best website experience for your
-              business.
+              Your website project questionnaire has been
+              successfully submitted. We'll review your
+              requirements and use your answers to plan the
+              best website experience for your business.
             </p>
 
             <div className="success-line"></div>
 
             <strong>JAV Events & Services</strong>
-            <small>PLAN • CREATE • CELEBRATE</small>
+
+            <small>
+              PLAN • CREATE • CELEBRATE
+            </small>
           </div>
         </main>
       </div>
     );
   }
+
+  // ==========================================
+  // MAIN APP
+  // ==========================================
 
   return (
     <div className="app">
@@ -268,7 +499,9 @@ function App() {
 
         {/* INTRO */}
         <section className="hero">
-          <div className="eyebrow">WEBSITE PROJECT</div>
+          <div className="eyebrow">
+            WEBSITE PROJECT
+          </div>
 
           <h1>
             Let's build something
@@ -276,8 +509,9 @@ function App() {
           </h1>
 
           <p>
-            Tell us about your business, your goals and the experience
-            you'd like your new website to create for your customers.
+            Tell us about your business, your goals and the
+            experience you'd like your new website to create
+            for your customers.
           </p>
         </section>
 
@@ -299,14 +533,20 @@ function App() {
               return (
                 <div
                   className={`step ${
-                    currentStep === number ? "active" : ""
+                    currentStep === number
+                      ? "active"
+                      : ""
                   } ${
-                    currentStep > number ? "completed" : ""
+                    currentStep > number
+                      ? "completed"
+                      : ""
                   }`}
                   key={step}
                 >
                   <div className="step-circle">
-                    {currentStep > number ? "✓" : number}
+                    {currentStep > number
+                      ? "✓"
+                      : number}
                   </div>
 
                   <span>{step}</span>
@@ -331,7 +571,9 @@ function App() {
                 <Field
                   label="Official Business Name"
                   required
-                  value={formData.business.businessName}
+                  value={
+                    formData.business.businessName
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -349,7 +591,10 @@ function App() {
                   </label>
 
                   <select
-                    value={formData.business.businessExperience}
+                    value={
+                      formData.business
+                        .businessExperience
+                    }
                     onChange={(e) =>
                       updateSection(
                         "business",
@@ -359,18 +604,34 @@ function App() {
                     }
                     required
                   >
-                    <option value="">Select an option</option>
-                    <option>Less than 1 year</option>
-                    <option>1–3 years</option>
-                    <option>3–5 years</option>
-                    <option>5+ years</option>
+                    <option value="">
+                      Select an option
+                    </option>
+
+                    <option>
+                      Less than 1 year
+                    </option>
+
+                    <option>
+                      1–3 years
+                    </option>
+
+                    <option>
+                      3–5 years
+                    </option>
+
+                    <option>
+                      5+ years
+                    </option>
                   </select>
                 </div>
 
                 <Field
                   label="Business Location"
                   required
-                  value={formData.business.businessLocation}
+                  value={
+                    formData.business.businessLocation
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -384,7 +645,9 @@ function App() {
                 <Field
                   label="Areas You Serve"
                   required
-                  value={formData.business.serviceAreas}
+                  value={
+                    formData.business.serviceAreas
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -398,7 +661,9 @@ function App() {
                 <Field
                   label="Business Phone Number"
                   required
-                  value={formData.business.businessPhone}
+                  value={
+                    formData.business.businessPhone
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -411,7 +676,9 @@ function App() {
 
                 <Field
                   label="WhatsApp Number"
-                  value={formData.business.businessWhatsApp}
+                  value={
+                    formData.business.businessWhatsApp
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -425,7 +692,9 @@ function App() {
                 <Field
                   label="Business Email"
                   type="email"
-                  value={formData.business.businessEmail}
+                  value={
+                    formData.business.businessEmail
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -438,7 +707,9 @@ function App() {
 
                 <Field
                   label="Existing Website"
-                  value={formData.business.existingWebsite}
+                  value={
+                    formData.business.existingWebsite
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -453,7 +724,10 @@ function App() {
                   full
                   label="Tell us about your business"
                   required
-                  value={formData.business.businessDescription}
+                  value={
+                    formData.business
+                      .businessDescription
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -467,7 +741,9 @@ function App() {
                 <Field
                   full
                   label="Full Business Address"
-                  value={formData.business.businessAddress}
+                  value={
+                    formData.business.businessAddress
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -481,7 +757,9 @@ function App() {
                 <TextArea
                   full
                   label="Business Hours"
-                  value={formData.business.businessHours}
+                  value={
+                    formData.business.businessHours
+                  }
                   onChange={(e) =>
                     updateSection(
                       "business",
@@ -495,7 +773,10 @@ function App() {
               </div>
 
               <FormFooter>
-                <button className="primary-btn" type="submit">
+                <button
+                  className="primary-btn"
+                  type="submit"
+                >
                   Continue to Services
                   <span>→</span>
                 </button>
@@ -553,7 +834,9 @@ function App() {
 
             <TextArea
               label="Tell us more about your services"
-              value={formData.services.serviceDescription}
+              value={
+                formData.services.serviceDescription
+              }
               onChange={(e) =>
                 updateSection(
                   "services",
@@ -565,10 +848,14 @@ function App() {
             />
 
             <div className="field">
-              <label>Which service is your highest priority?</label>
+              <label>
+                Which service is your highest priority?
+              </label>
 
               <select
-                value={formData.services.priorityService}
+                value={
+                  formData.services.priorityService
+                }
                 onChange={(e) =>
                   updateSection(
                     "services",
@@ -577,16 +864,23 @@ function App() {
                   )
                 }
               >
-                <option value="">Select your most important service</option>
+                <option value="">
+                  Select your most important service
+                </option>
 
-                {formData.services.selectedServices.map((service) => (
-                  <option key={service}>{service}</option>
-                ))}
+                {formData.services.selectedServices.map(
+                  (service) => (
+                    <option key={service}>
+                      {service}
+                    </option>
+                  )
+                )}
               </select>
             </div>
 
             <FormFooter onBack={previousStep}>
               <button
+                type="button"
                 className="primary-btn"
                 onClick={handleServicesSubmit}
               >
@@ -687,7 +981,9 @@ function App() {
 
             <TextArea
               label="Describe your vision for the website"
-              value={formData.goals.websiteVision}
+              value={
+                formData.goals.websiteVision
+              }
               onChange={(e) =>
                 updateSection(
                   "goals",
@@ -700,6 +996,7 @@ function App() {
 
             <FormFooter onBack={previousStep}>
               <button
+                type="button"
                 className="primary-btn"
                 onClick={handleGoalsSubmit}
               >
@@ -787,7 +1084,10 @@ function App() {
                     )
                   }
                 >
-                  <span className="style-symbol">✦</span>
+                  <span className="style-symbol">
+                    ✦
+                  </span>
+
                   {style}
                 </button>
               ))}
@@ -809,7 +1109,9 @@ function App() {
 
               <Field
                 label="Colours You Want to Avoid"
-                value={formData.branding.avoidColors}
+                value={
+                  formData.branding.avoidColors
+                }
                 onChange={(e) =>
                   updateSection(
                     "branding",
@@ -823,7 +1125,9 @@ function App() {
               <TextArea
                 full
                 label="Reference Websites"
-                value={formData.branding.referenceWebsites}
+                value={
+                  formData.branding.referenceWebsites
+                }
                 onChange={(e) =>
                   updateSection(
                     "branding",
@@ -837,6 +1141,7 @@ function App() {
 
             <FormFooter onBack={previousStep}>
               <button
+                type="button"
                 className="primary-btn"
                 onClick={handleBrandingSubmit}
               >
@@ -857,7 +1162,9 @@ function App() {
             />
 
             <div className="content-question">
-              <h3>Do you have professional photos?</h3>
+              <h3>
+                Do you have professional photos?
+              </h3>
 
               <div className="radio-grid">
                 {["Yes", "No", "Some"].map((item) => (
@@ -903,7 +1210,10 @@ function App() {
             </div>
 
             <div className="content-question">
-              <h3>Do you already have written website content?</h3>
+              <h3>
+                Do you already have written website
+                content?
+              </h3>
 
               <div className="radio-grid">
                 {["Yes", "No", "Some"].map((item) => (
@@ -911,7 +1221,8 @@ function App() {
                     key={item}
                     text={item}
                     selected={
-                      formData.content.hasWrittenContent === item
+                      formData.content.hasWrittenContent ===
+                      item
                     }
                     onClick={() =>
                       updateSection(
@@ -927,7 +1238,9 @@ function App() {
 
             <TextArea
               label="Content notes"
-              value={formData.content.contentNotes}
+              value={
+                formData.content.contentNotes
+              }
               onChange={(e) =>
                 updateSection(
                   "content",
@@ -940,18 +1253,23 @@ function App() {
 
             <div className="upload-info">
               <div className="upload-icon">↑</div>
+
               <div>
-                <strong>Content can be provided later</strong>
+                <strong>
+                  Content can be provided later
+                </strong>
+
                 <p>
-                  You don't need to upload your files now.
-                  We can arrange the content collection after
-                  the questionnaire.
+                  You don't need to upload your files
+                  now. We can arrange the content
+                  collection after the questionnaire.
                 </p>
               </div>
             </div>
 
             <FormFooter onBack={previousStep}>
               <button
+                type="button"
                 className="primary-btn"
                 onClick={nextStep}
               >
@@ -1005,7 +1323,9 @@ function App() {
 
             <Field
               label="Any custom feature?"
-              value={formData.features.customFeature}
+              value={
+                formData.features.customFeature
+              }
               onChange={(e) =>
                 updateSection(
                   "features",
@@ -1017,30 +1337,37 @@ function App() {
             />
 
             <div className="field">
-              <label>Will customers need to book services online?</label>
+              <label>
+                Will customers need to book services
+                online?
+              </label>
 
               <div className="radio-grid">
-                {["Yes", "No", "Not sure"].map((item) => (
-                  <Radio
-                    key={item}
-                    text={item}
-                    selected={
-                      formData.features.bookingRequired === item
-                    }
-                    onClick={() =>
-                      updateSection(
-                        "features",
-                        "bookingRequired",
+                {["Yes", "No", "Not sure"].map(
+                  (item) => (
+                    <Radio
+                      key={item}
+                      text={item}
+                      selected={
+                        formData.features.bookingRequired ===
                         item
-                      )
-                    }
-                  />
-                ))}
+                      }
+                      onClick={() =>
+                        updateSection(
+                          "features",
+                          "bookingRequired",
+                          item
+                        )
+                      }
+                    />
+                  )
+                )}
               </div>
             </div>
 
             <FormFooter onBack={previousStep}>
               <button
+                type="button"
                 className="primary-btn"
                 onClick={nextStep}
               >
@@ -1068,7 +1395,9 @@ function App() {
               <Field
                 label="Contact Person"
                 required
-                value={formData.contact.contactName}
+                value={
+                  formData.contact.contactName
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1082,7 +1411,9 @@ function App() {
               <Field
                 label="Phone Number"
                 required
-                value={formData.contact.contactPhone}
+                value={
+                  formData.contact.contactPhone
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1095,7 +1426,9 @@ function App() {
 
               <Field
                 label="WhatsApp Number"
-                value={formData.contact.contactWhatsApp}
+                value={
+                  formData.contact.contactWhatsApp
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1109,7 +1442,9 @@ function App() {
               <Field
                 label="Email Address"
                 type="email"
-                value={formData.contact.contactEmail}
+                value={
+                  formData.contact.contactEmail
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1135,7 +1470,8 @@ function App() {
                   key={item}
                   text={item}
                   selected={
-                    formData.contact.domainStatus === item
+                    formData.contact.domainStatus ===
+                    item
                   }
                   onClick={() =>
                     updateSection(
@@ -1150,7 +1486,9 @@ function App() {
 
             <Field
               label="Existing or preferred domain name"
-              value={formData.contact.domainName}
+              value={
+                formData.contact.domainName
+              }
               onChange={(e) =>
                 updateSection(
                   "contact",
@@ -1168,7 +1506,9 @@ function App() {
             <div className="form-grid">
               <Field
                 label="Instagram"
-                value={formData.contact.instagram}
+                value={
+                  formData.contact.instagram
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1181,7 +1521,9 @@ function App() {
 
               <Field
                 label="Facebook"
-                value={formData.contact.facebook}
+                value={
+                  formData.contact.facebook
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1194,7 +1536,9 @@ function App() {
 
               <Field
                 label="TikTok"
-                value={formData.contact.tiktok}
+                value={
+                  formData.contact.tiktok
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1207,7 +1551,9 @@ function App() {
 
               <Field
                 label="YouTube"
-                value={formData.contact.youtube}
+                value={
+                  formData.contact.youtube
+                }
                 onChange={(e) =>
                   updateSection(
                     "contact",
@@ -1221,7 +1567,9 @@ function App() {
 
             <TextArea
               label="Anything else we should know?"
-              value={formData.contact.additionalInformation}
+              value={
+                formData.contact.additionalInformation
+              }
               onChange={(e) =>
                 updateSection(
                   "contact",
@@ -1234,24 +1582,30 @@ function App() {
 
             <div className="notice">
               <div className="notice-icon">✓</div>
+
               <div>
                 <strong>Almost there!</strong>
+
                 <p>
-                  Once you continue, you'll have a chance to
-                  review everything before submitting.
+                  Once you continue, you'll have a
+                  chance to review everything before
+                  submitting.
                 </p>
               </div>
             </div>
 
             <FormFooter onBack={previousStep}>
               <button
+                type="button"
                 className="primary-btn"
                 onClick={() => {
                   if (
                     !formData.contact.contactName ||
                     !formData.contact.contactPhone
                   ) {
-                    alert("Please enter your name and phone number.");
+                    alert(
+                      "Please enter your name and phone number."
+                    );
                     return;
                   }
 
@@ -1282,7 +1636,8 @@ function App() {
 
               <p>
                 Everything you've entered is shown below.
-                Please review your answers before submitting.
+                Please review your answers before
+                submitting.
               </p>
             </div>
 
@@ -1290,14 +1645,38 @@ function App() {
               number="01"
               title="Business Information"
               items={[
-                ["Business Name", formData.business.businessName],
-                ["Experience", formData.business.businessExperience],
-                ["Location", formData.business.businessLocation],
-                ["Service Areas", formData.business.serviceAreas],
-                ["Phone", formData.business.businessPhone],
-                ["WhatsApp", formData.business.businessWhatsApp],
-                ["Email", formData.business.businessEmail],
-                ["Description", formData.business.businessDescription],
+                [
+                  "Business Name",
+                  formData.business.businessName,
+                ],
+                [
+                  "Experience",
+                  formData.business.businessExperience,
+                ],
+                [
+                  "Location",
+                  formData.business.businessLocation,
+                ],
+                [
+                  "Service Areas",
+                  formData.business.serviceAreas,
+                ],
+                [
+                  "Phone",
+                  formData.business.businessPhone,
+                ],
+                [
+                  "WhatsApp",
+                  formData.business.businessWhatsApp,
+                ],
+                [
+                  "Email",
+                  formData.business.businessEmail,
+                ],
+                [
+                  "Description",
+                  formData.business.businessDescription,
+                ],
               ]}
             />
 
@@ -1307,7 +1686,9 @@ function App() {
               items={[
                 [
                   "Selected Services",
-                  formData.services.selectedServices.join(", "),
+                  formData.services.selectedServices.join(
+                    ", "
+                  ),
                 ],
                 [
                   "Priority Service",
@@ -1326,7 +1707,9 @@ function App() {
               items={[
                 [
                   "Goals",
-                  formData.goals.selectedGoals.join(", "),
+                  formData.goals.selectedGoals.join(
+                    ", "
+                  ),
                 ],
                 [
                   "Main Visitor Action",
@@ -1343,9 +1726,18 @@ function App() {
               number="04"
               title="Branding"
               items={[
-                ["Has Logo", formData.branding.hasLogo],
-                ["Style", formData.branding.style],
-                ["Colours", formData.branding.colors],
+                [
+                  "Has Logo",
+                  formData.branding.hasLogo,
+                ],
+                [
+                  "Style",
+                  formData.branding.style,
+                ],
+                [
+                  "Colours",
+                  formData.branding.colors,
+                ],
                 [
                   "Avoid Colours",
                   formData.branding.avoidColors,
@@ -1361,13 +1753,22 @@ function App() {
               number="05"
               title="Content"
               items={[
-                ["Photos", formData.content.hasPhotos],
-                ["Videos", formData.content.hasVideos],
+                [
+                  "Photos",
+                  formData.content.hasPhotos,
+                ],
+                [
+                  "Videos",
+                  formData.content.hasVideos,
+                ],
                 [
                   "Written Content",
                   formData.content.hasWrittenContent,
                 ],
-                ["Notes", formData.content.contentNotes],
+                [
+                  "Notes",
+                  formData.content.contentNotes,
+                ],
               ]}
             />
 
@@ -1377,7 +1778,9 @@ function App() {
               items={[
                 [
                   "Selected Features",
-                  formData.features.selectedFeatures.join(", "),
+                  formData.features.selectedFeatures.join(
+                    ", "
+                  ),
                 ],
                 [
                   "Custom Feature",
@@ -1394,12 +1797,30 @@ function App() {
               number="07"
               title="Contact"
               items={[
-                ["Name", formData.contact.contactName],
-                ["Phone", formData.contact.contactPhone],
-                ["WhatsApp", formData.contact.contactWhatsApp],
-                ["Email", formData.contact.contactEmail],
-                ["Domain", formData.contact.domainName],
-                ["Instagram", formData.contact.instagram],
+                [
+                  "Name",
+                  formData.contact.contactName,
+                ],
+                [
+                  "Phone",
+                  formData.contact.contactPhone,
+                ],
+                [
+                  "WhatsApp",
+                  formData.contact.contactWhatsApp,
+                ],
+                [
+                  "Email",
+                  formData.contact.contactEmail,
+                ],
+                [
+                  "Domain",
+                  formData.contact.domainName,
+                ],
+                [
+                  "Instagram",
+                  formData.contact.instagram,
+                ],
               ]}
             />
 
@@ -1410,15 +1831,17 @@ function App() {
                 <strong>Ready to submit?</strong>
 
                 <p>
-                  Your information will be sent securely for
-                  review so we can understand your website
-                  requirements and prepare the next steps.
+                  Your information will be sent securely
+                  for review so we can understand your
+                  website requirements and prepare the
+                  next steps.
                 </p>
               </div>
             </div>
 
             <div className="review-footer">
               <button
+                type="button"
                 className="secondary-btn"
                 onClick={previousStep}
               >
@@ -1426,6 +1849,7 @@ function App() {
               </button>
 
               <button
+                type="button"
                 className="primary-btn"
                 onClick={submitForm}
                 disabled={submitting}
@@ -1433,12 +1857,12 @@ function App() {
                 {submitting
                   ? "Submitting..."
                   : "Submit Questionnaire"}
+
                 {!submitting && <span>→</span>}
               </button>
             </div>
           </section>
         )}
-
       </main>
 
       <footer className="footer">
@@ -1455,12 +1879,20 @@ function App() {
   );
 }
 
-/* COMPONENT HELPERS */
+/* ==========================================
+   COMPONENT HELPERS
+========================================== */
 
-function SectionTitle({ number, title, description }) {
+function SectionTitle({
+  number,
+  title,
+  description,
+}) {
   return (
     <div className="section-title">
-      <div className="section-number">{number}</div>
+      <div className="section-number">
+        {number}
+      </div>
 
       <div>
         <h2>{title}</h2>
@@ -1480,7 +1912,11 @@ function Field({
   full = false,
 }) {
   return (
-    <div className={`field ${full ? "full" : ""}`}>
+    <div
+      className={`field ${
+        full ? "full" : ""
+      }`}
+    >
       <label>
         {label} {required && <b>*</b>}
       </label>
@@ -1505,7 +1941,11 @@ function TextArea({
   full = false,
 }) {
   return (
-    <div className={`field ${full ? "full" : ""}`}>
+    <div
+      className={`field ${
+        full ? "full" : ""
+      }`}
+    >
       <label>
         {label} {required && <b>*</b>}
       </label>
@@ -1521,11 +1961,17 @@ function TextArea({
   );
 }
 
-function Option({ selected, onClick, text }) {
+function Option({
+  selected,
+  onClick,
+  text,
+}) {
   return (
     <button
       type="button"
-      className={`option-card ${selected ? "selected" : ""}`}
+      className={`option-card ${
+        selected ? "selected" : ""
+      }`}
       onClick={onClick}
     >
       <span className="check-box">
@@ -1537,11 +1983,17 @@ function Option({ selected, onClick, text }) {
   );
 }
 
-function Radio({ text, selected, onClick }) {
+function Radio({
+  text,
+  selected,
+  onClick,
+}) {
   return (
     <button
       type="button"
-      className={`radio-card ${selected ? "selected" : ""}`}
+      className={`radio-card ${
+        selected ? "selected" : ""
+      }`}
       onClick={onClick}
     >
       <span className="radio-dot"></span>
@@ -1550,7 +2002,10 @@ function Radio({ text, selected, onClick }) {
   );
 }
 
-function FormFooter({ children, onBack }) {
+function FormFooter({
+  children,
+  onBack,
+}) {
   return (
     <div className="form-footer">
       {onBack ? (
@@ -1570,19 +2025,32 @@ function FormFooter({ children, onBack }) {
   );
 }
 
-function ReviewCard({ number, title, items }) {
+function ReviewCard({
+  number,
+  title,
+  items,
+}) {
   return (
     <div className="review-card">
       <div className="review-card-header">
         <h3>{title}</h3>
-        <div className="review-number">{number}</div>
+
+        <div className="review-number">
+          {number}
+        </div>
       </div>
 
       <div className="review-grid">
         {items.map(([label, value]) => (
-          <div className="review-item" key={label}>
+          <div
+            className="review-item"
+            key={label}
+          >
             <small>{label}</small>
-            <p>{value || "Not provided"}</p>
+
+            <p>
+              {value || "Not provided"}
+            </p>
           </div>
         ))}
       </div>
